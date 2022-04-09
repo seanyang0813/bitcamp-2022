@@ -3,7 +3,7 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import Post from "../components/Post";
 
-export default function Home() {
+export default function Home({ posts }) {
     function getPosts() {
         return [
             {
@@ -50,7 +50,7 @@ export default function Home() {
             </Head>
 
             <main className={styles.main}>
-                {getPosts().map((p) => (
+                {posts.map((p) => (
                     <Post key={p.id} {...p}></Post>
                 ))}
             </main>
@@ -58,4 +58,14 @@ export default function Home() {
             <footer className={styles.footer}></footer>
         </div>
     );
+}
+
+export async function getStaticProps(context) {
+    const res = await fetch("http://localhost:5000/posts");
+    const posts = await res.json();
+    console.log(posts);
+
+    return {
+        props: { posts: posts }, // will be passed to the page component as props
+    };
 }
