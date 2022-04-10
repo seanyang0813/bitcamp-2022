@@ -12,6 +12,7 @@ export default function Post({
     reveal_date,
     fetchPosts,
     setModalIsOpen,
+    username,
 }) {
     return content == null ? (
         <HiddenPost
@@ -26,6 +27,7 @@ export default function Post({
                 reveal_date,
                 fetchPosts,
                 setModalIsOpen,
+                username,
             }}
         ></HiddenPost>
     ) : (

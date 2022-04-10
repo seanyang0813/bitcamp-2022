@@ -12,23 +12,29 @@ export default function HiddenPost({
     reveal_date,
     fetchPosts,
     setModalIsOpen,
+    username,
 }) {
     function pay_post() {
         setModalIsOpen(true);
-        fetch("http://127.0.0.1:5000/pay", {
+        fetch("http://localhost:5000/pay", {
             method: "POST", // *GET, POST, PUT, DELETE, etc.
             headers: {
                 "Content-Type": "application/json",
-                // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify({
                 id: id,
-                username: "sean",
+                username: username,
             }), // body data type must match "Content-Type" header
-        }).then(fetchPosts);
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((err) => console.log(err));
         setTimeout(() => {
             setModalIsOpen(false);
-        }, 1000);
+            fetchPosts();
+        }, 1500);
     }
 
     return (
@@ -46,17 +52,19 @@ export default function HiddenPost({
 
             <p>post time: {new Date(post_date).toLocaleString()}</p>
             <p>reveal time: {new Date(reveal_date).toLocaleString()}</p>
-            <div className="flex justify-center">
-                {" "}
-                <button
-                    className="bg-blue-500 hover:bg-blue-700 p-2 rounded-lg"
-                    onClick={pay_post}
-                >
-                    <span className="text-stone-100 font-semibold">
-                        pay to unlock
-                    </span>
-                </button>
-            </div>
+            {username && username != "" && (
+                <div className="flex justify-center">
+                    {" "}
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 p-2 rounded-lg"
+                        onClick={pay_post}
+                    >
+                        <span className="text-stone-100 font-semibold">
+                            pay to unlock
+                        </span>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

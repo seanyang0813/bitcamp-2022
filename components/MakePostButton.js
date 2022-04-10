@@ -1,7 +1,7 @@
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
 
-export default function MakePostButton({ fetchPosts }) {
+export default function MakePostButton({ fetchPosts, username }) {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -47,7 +47,7 @@ export default function MakePostButton({ fetchPosts }) {
             body: JSON.stringify({
                 title: title,
                 content: content,
-                maker: "sean",
+                maker: username,
                 reveal_date: time,
             }), // body data type must match "Content-Type" header
         })
@@ -90,19 +90,19 @@ export default function MakePostButton({ fetchPosts }) {
                         </div>
                         <div className="m-2 flex-1">
                             <label
-                                className="block text-gray-500 font-bold mb-1 md:mb-0 pr-4 m-2"
+                                className="block text-gray-500 font-bold"
                                 htmlFor="inline-full-name"
                             >
                                 Reveal time from post
                             </label>
                             <span>
-                                <span className="m-2">
+                                <span className="mr-2">
                                     <input
                                         type="number"
                                         min="0"
                                         className="
                                             form-control
-                                            px-3
+                                            pr-3
                                             py-1.5
                                             text-base
                                             font-normal
@@ -112,16 +112,15 @@ export default function MakePostButton({ fetchPosts }) {
                                             rounded
                                             transition
                                             ease-in-out
-                                            m-2
                                             focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
                                         "
                                         onChange={(e) =>
                                             setDays(e.target.value)
                                         }
                                     ></input>
-                                    days
+                                    <span className="m-2">days</span>
                                 </span>
-                                <span className="m-2">
+                                <span className="mr-2">
                                     <input
                                         type="number"
                                         onChange={(e) =>
@@ -130,7 +129,6 @@ export default function MakePostButton({ fetchPosts }) {
                                         min="0"
                                         className="
                                             form-control
-                                            bg-gray-200
                                             px-3
                                             py-1.5
                                             text-base
@@ -141,13 +139,12 @@ export default function MakePostButton({ fetchPosts }) {
                                             rounded
                                             transition
                                             ease-in-out
-                                            m-2
                                             focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
                                         "
                                     ></input>
-                                    hours
+                                    <span className="m-2">hours</span>
                                 </span>
-                                <span className="m-2">
+                                <span className="mr-2">
                                     <input
                                         type="number"
                                         onChange={(e) =>
@@ -156,7 +153,6 @@ export default function MakePostButton({ fetchPosts }) {
                                         min="0"
                                         className="
                                             form-control
-                                            bg-gray-200
                                             px-3
                                             py-1.5
                                             text-base
@@ -167,11 +163,10 @@ export default function MakePostButton({ fetchPosts }) {
                                             rounded
                                             transition
                                             ease-in-out
-                                            m-2
                                             focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
                                         "
                                     ></input>
-                                    minutes
+                                    <span className="m-2">minutes</span>
                                 </span>
                             </span>
                         </div>
@@ -216,7 +211,9 @@ export default function MakePostButton({ fetchPosts }) {
                 </div>
                 {error && (
                     <div className="flex justify-center p-2">
-                        <p class="text-red-500 text-xs italic">Invalid input</p>
+                        <p className="text-red-500 text-xs italic">
+                            Invalid input
+                        </p>
                     </div>
                 )}
             </Modal>

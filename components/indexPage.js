@@ -5,16 +5,44 @@ import Post from "./Post";
 import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import MakePostButton from "./MakePostButton";
+import LoginModal from "./LoginModal";
 
 export default function Home({ posts_prop, filteruser }) {
     const [posts, setPosts] = useState(posts_prop);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [username, setUsername] = useState("");
+    const [usernameModalOpen, setUsernameModalOpen] = useState(false);
+
+    useEffect(() => {
+        // refetch all of the content whenver username changes
+        fetchPosts();
+    }, [username]);
 
     function fetchPosts() {
-        fetch(`http://localhost:5000/posts?byuser=${"sean"}`)
-            .then((res) => res.json())
-            .then((data) => setPosts(data));
+        if (username === "") {
+            if (filteruser == null || filteruser == "") {
+                fetch(`http://localhost:5000/posts`)
+                    .then((res) => res.json())
+                    .then((data) => setPosts(data));
+            } else {
+                console.log(filteruser);
+                fetch(`http://localhost:5000/posts?filteruser=${filteruser}`)
+                    .then((res) => res.json())
+                    .then((data) => setPosts(data));
+            }
+        } else {
+            if (filteruser == null || filteruser == "") {
+                fetch(`http://localhost:5000/posts?byuser=${username}`)
+                    .then((res) => res.json())
+                    .then((data) => setPosts(data));
+            } else {
+                fetch(
+                    `http://localhost:5000/posts?byuser=${username}&filteruser=${filteruser}`
+                )
+                    .then((res) => res.json())
+                    .then((data) => setPosts(data));
+            }
+        }
     }
     return (
         <div>
@@ -28,19 +56,45 @@ export default function Home({ posts_prop, filteruser }) {
             </Head>
 
             <main className={styles.main}>
-                <div className="fixed top-0 z-10 bg-slate-400 w-full h-12 text-center grid justify-items-end">
-                    <p className="items-center p-3">
-                        {username.length == 0 ? "login" : "logged in as sean"}
-                    </p>
+                <div className="fixed top-0 z-10 h-10 bg-slate-200 w-full flex justify-end ">
+                    {username != "" ? (
+                        <span>
+                            <span className="mr-2">
+                                logged in as {username}
+                            </span>
+                            <button
+                                onClick={() => {
+                                    setUsername("");
+                                }}
+                                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                            >
+                                <span>Logout</span>
+                            </button>
+                        </span>
+                    ) : (
+                        <button
+                            onClick={() => setUsernameModalOpen(true)}
+                            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                        >
+                            <span>Login</span>
+                        </button>
+                    )}
                 </div>
-                {posts.map((p) => (
-                    <Post
-                        key={p.id}
-                        {...p}
-                        fetchPosts={fetchPosts}
-                        setModalIsOpen={setModalIsOpen}
-                    ></Post>
-                ))}
+                <LoginModal
+                    setUsername={setUsername}
+                    setLoginModalIsOpen={setUsernameModalOpen}
+                    loginModalIsOpen={usernameModalOpen}
+                ></LoginModal>
+                {posts &&
+                    posts.map((p) => (
+                        <Post
+                            key={p.id}
+                            {...p}
+                            fetchPosts={fetchPosts}
+                            setModalIsOpen={setModalIsOpen}
+                            username={username}
+                        ></Post>
+                    ))}
                 <Modal
                     isOpen={modalIsOpen}
                     onAfterOpen={() => {}}
@@ -73,18 +127,18 @@ export default function Home({ posts_prop, filteruser }) {
                 >
                     <div className="z-20 h-full flex items-center content-center justify-center">
                         <div>
-                            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                                 <svg
-                                    class="h-6 w-6 text-green-600"
+                                    className="h-6 w-6 text-green-600"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
                                         d="M5 13l4 4L19 7"
                                     ></path>
                                 </svg>
@@ -94,20 +148,15 @@ export default function Home({ posts_prop, filteruser }) {
                     </div>
                 </Modal>
             </main>
-            <div className="fixed bottom-10 right-10">
-                <MakePostButton fetchPosts={fetchPosts}></MakePostButton>
+            <div
+                className="fixed bottom-10 right-10"
+                style={{ visibility: username != "" ? "visible" : "hidden" }}
+            >
+                <MakePostButton
+                    fetchPosts={fetchPosts}
+                    username={username}
+                ></MakePostButton>
             </div>
         </div>
     );
-}
-
-export async function getStaticProps(context) {
-    //const res = await fetch(`http://localhost:5000/posts?byuser=${"sean"}`);
-    const res = await fetch(`http://localhost:5000/posts`);
-    const posts = await res.json();
-    console.log(posts);
-
-    return {
-        props: { posts_prop: posts }, // will be passed to the page component as props
-    };
 }
