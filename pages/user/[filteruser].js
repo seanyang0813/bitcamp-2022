@@ -1,24 +1,25 @@
 import Head from "next/head";
 import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import Post from "../components/Post";
+import styles from "../../styles/Home.module.css";
+import Post from "../../components/Post";
 import { useState, useEffect } from "react";
 import Modal from "react-modal";
-import MakePostButton from "../components/MakePostButton";
-import IndexPage from "../components/IndexPage";
+import MakePostButton from "../../components/MakePostButton";
+import { useRouter } from "next/router";
 
 export default function Home({ posts_prop }) {
     const [posts, setPosts] = useState(posts_prop);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [username, setUsername] = useState("");
+    const router = useRouter();
+    const { filteruser } = router.query;
 
     function fetchPosts() {
-        fetch(`http://localhost:5000/posts?byuser=${"sean"}`)
+        fetch(`http://localhost:5000/posts?byuser=${filteruser}`)
             .then((res) => res.json())
             .then((data) => setPosts(data));
     }
     return (
-        <div>
+        <div className={styles.container}>
             <Head>
                 <title>Create Next App</title>
                 <meta
@@ -29,11 +30,6 @@ export default function Home({ posts_prop }) {
             </Head>
 
             <main className={styles.main}>
-                <div className="fixed top-0 z-10 bg-slate-400 w-full h-12 text-center grid justify-items-end">
-                    <p className="items-center p-3">
-                        {username.length == 0 ? "login" : "logged in as sean"}
-                    </p>
-                </div>
                 {posts.map((p) => (
                     <Post
                         key={p.id}
@@ -102,13 +98,18 @@ export default function Home({ posts_prop }) {
     );
 }
 
-export async function getStaticProps(context) {
+Home.getInitialProps = async (context) => {
+    const { filteruser } = context.query;
     //const res = await fetch(`http://localhost:5000/posts?byuser=${"sean"}`);
-    const res = await fetch(`http://localhost:5000/posts?byuser=sean`);
+    const res = await fetch(
+        `http://localhost:5000/posts?filteruser=${filteruser}`
+    );
+
     const posts = await res.json();
     console.log(posts);
 
+    console.log(filteruser);
     return {
-        props: { posts_prop: posts }, // will be passed to the page component as props
+        posts_prop: posts, // will be passed to the page component as props
     };
-}
+};

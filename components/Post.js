@@ -10,6 +10,8 @@ export default function Post({
     paid,
     post_date,
     reveal_date,
+    fetchPosts,
+    setModalIsOpen,
 }) {
     return content == null ? (
         <HiddenPost
@@ -22,6 +24,8 @@ export default function Post({
                 paid,
                 post_date,
                 reveal_date,
+                fetchPosts,
+                setModalIsOpen,
             }}
         ></HiddenPost>
     ) : (
@@ -35,6 +39,7 @@ export default function Post({
                 paid,
                 post_date,
                 reveal_date,
+                setModalIsOpen,
             }}
         ></VisiblePost>
     );
